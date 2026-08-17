@@ -1,0 +1,26 @@
+[
+  {
+    "id": "goal-starter-1",
+    "title": "Master Full-Stack Engineering Studies",
+    "category": "cat-learning",
+    "targetDate": "2026-10-31",
+    "progress": 38,
+    "createdAt": "2026-08-17T09:00:00.000Z"
+  },
+  {
+    "id": "goal-starter-2",
+    "title": "Build a Personal Emergency Fund of $2000",
+    "category": "cat-routine",
+    "targetDate": "2026-12-31",
+    "progress": 50,
+    "createdAt": "2026-08-17T09:00:00.000Z"
+  },
+  {
+    "id": "goal-starter-3",
+    "title": "Consistently Meditate & Lower Daily Stress",
+    "category": "cat-health",
+    "targetDate": "2026-09-15",
+    "progress": 56,
+    "createdAt": "2026-08-17T09:00:00.000Z"
+  }
+]

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دائماً | Habits & Performance Tracker</title>
+  <meta name="description" content="A gorgeous, glassmorphic daily activity tracker and performance logging dashboard to measure habit consistency, moods, and streaks.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons for aesthetics -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Canvas Confetti CDN for 100% score celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <div class="glow-bg"></div>
+  
+  <div class="app-container">
+    <!-- Header Area -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <i class="fa-solid fa-circle-nodes logo-icon"></i>
+        </div>
+        <div class="brand-text">
+          <h1 class="arabic-title">دائماً</h1>
+          <p>تعقب أدائك اليومي • Daily Tracker</p>
+        </div>
+      </div>
+      
+      <!-- Date Navigation Controls -->
+      <div class="date-navigator">
+        <button id="prev-day-btn" class="nav-btn" aria-label="Previous day">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <div class="calendar-wrapper">
+          <i class="fa-regular fa-calendar-days calendar-icon"></i>
+          <input type="date" id="date-picker" class="date-input">
+        </div>
+        <button id="next-day-btn" class="nav-btn" aria-label="Next day">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button id="plan-tomorrow-shortcut-btn" class="action-btn outline-btn short-btn">
+          <i class="fa-solid fa-calendar-plus icon-purple"></i> Plan Tomorrow
+        </button>
+      </div>
+      
+      <!-- Dashboard Navigation Tabs -->
+      <nav class="app-nav">
+        <button class="nav-tab active" data-tab="dashboard">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </button>
+        <button class="nav-tab" data-tab="activities">
+          <i class="fa-solid fa-list-check"></i> Manage Tasks
+        </button>
+        <button class="nav-tab" data-tab="goals">
+          <i class="fa-solid fa-bullseye"></i> Life Goals
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Tab 1: Dashboard (Checklist, Finance & Performance Stats) -->
+      <section id="tab-dashboard" class="tab-pane active">
+        <!-- Quick Stats Cards Grid -->
+        <div class="stats-grid">
+          <!-- Stat Card 1: Daily Score -->
+          <div class="stat-card score-card glass-panel">
+            <div class="card-header">
+              <h3>Daily Performance</h3>
+              <i class="fa-solid fa-gauge-high card-icon text-purple"></i>
+            </div>
+            <div class="score-circle-container">
+              <div class="score-circle">
+                <svg class="progress-ring" width="120" height="120">
+                  <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="50" cx="60" cy="60" />
+                  <circle id="score-progress" class="progress-ring__circle" stroke="url(#score-grad)" stroke-width="8" stroke-dasharray="314.16" stroke-dashoffset="314.16" fill="transparent" r="50" cx="60" cy="60" />
+                  <!-- SVG Gradient definitions -->
+                  <defs>
+                    <linearGradient id="score-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#a855f7" />
+                      <stop offset="100%" stop-color="#6366f1" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="score-text">
+                  <span id="daily-score-val">0%</span>
+                  <p id="performance-rating">No Tasks</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stat Card 2: Streak info -->
+          <div class="stat-card glass-panel streak-card">
+            <div class="card-header">
+              <h3>Streak Tracker</h3>
+              <i class="fa-solid fa-fire card-icon text-orange"></i>
+            </div>
+            <div class="streak-body">
+              <div class="streak-number-wrapper">
+                <span id="current-streak-val">0</span>
+                <p>Days Streak</p>
+              </div>
+              <div class="streak-substats">
+                <div class="substat-item">
+                  <span class="substat-label">Longest Streak</span>
+                  <span id="max-streak-val" class="substat-value">0 days</span>
+                </div>
+                <div class="substat-item">
+                  <span class="substat-label">Active Goals</span>
+                  <span id="total-activities-count" class="substat-value">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stat Card 3: Mood Logging -->
+          <div class="stat-card glass-panel mood-card">
+            <div class="card-header">
+              <h3>Daily Focus & Mood</h3>
+              <i class="fa-regular fa-face-smile card-icon text-cyan"></i>
+            </div>
+            <div class="mood-body">
+              <div class="mood-selector-label">
+                <span id="mood-val-emoji">😐</span>
+                <span id="mood-val-text">Average</span>
+              </div>
+              <input type="range" id="mood-slider" min="1" max="5" value="3" class="mood-range-slider">
+              <div class="mood-ticks">
+                <span>😫</span>
+                <span>🙁</span>
+                <span>😐</span>
+                <span>🙂</span>
+                <span>🌟</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Split Panel (Checklist & Ledger vs Analytics Charts) -->
+        <div class="dashboard-split">
+          <!-- Left side: Daily Checklist & Daily Finance Ledger -->
+          <div class="left-dashboard-pane" style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Checklist Card -->
+            <div class="checklist-container glass-panel">
+              <div class="panel-header">
+                <h2 id="checklist-title">Today's Checklist</h2>
+                <span id="checklist-progress-text">0 / 0 Completed</span>
+              </div>
+              
+              <div id="checklist-empty-state" class="empty-state hidden">
+                <i class="fa-solid fa-circle-check empty-icon"></i>
+                <p>No activities scheduled for this date.</p>
+                <button class="action-btn outline-btn" id="go-to-manager-btn">
+                  Add Task / Schedule <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+              
+              <ul id="checklist-list" class="checklist-list">
+                <!-- Checklist items populated via client.js -->
+              </ul>
+
+              <!-- Daily Notes Journal -->
+              <div class="notes-wrapper">
+                <label for="daily-notes-textarea">
+                  <i class="fa-solid fa-pen-nib"></i> Daily Journal & Reflection
+                </label>
+                <textarea id="daily-notes-textarea" placeholder="Reflect on your day, achievements, challenges, or plans..."></textarea>
+                <div class="notes-status-wrapper">
+                  <span id="notes-save-status">Saved</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Daily Finance Ledger Card -->
+            <div class="finance-container glass-panel" style="padding: 1.5rem;">
+              <div class="panel-header">
+                <h2><i class="fa-solid fa-wallet text-cyan"></i> Daily Finance Ledger</h2>
+                <span id="finance-summary-badge" class="badge">Net: $0</span>
+              </div>
+              
+              <!-- Income, Expense, Balance Grid -->
+              <div class="finance-badges-grid">
+                <div class="finance-badge-card bg-green">
+                  <span class="f-badge-label">Total Income</span>
+                  <span id="f-total-income">$0</span>
+                </div>
+                <div class="finance-badge-card bg-red">
+                  <span class="f-badge-label">Total Expenses</span>
+                  <span id="f-total-expenses">$0</span>
+                </div>
+                <div class="finance-badge-card bg-cyan">
+                  <span class="f-badge-label">Net Balance</span>
+                  <span id="f-net-balance">$0</span>
+                </div>
+              </div>
+
+              <!-- Quick Transaction Logger Form -->
+              <form id="finance-form" class="finance-quick-form">
+                <input type="text" id="f-desc" placeholder="Transaction (e.g. Freelance, Dinner)..." required class="form-input">
+                <input type="number" id="f-amount" placeholder="Amount ($)..." min="0.01" step="0.01" required class="form-input">
+                <div class="select-wrapper">
+                  <select id="f-type" required>
+                    <option value="expense">Expense 💸</option>
+                    <option value="income">Income 💰</option>
+                  </select>
+                </div>
+                <button type="submit" class="action-btn primary-btn short-btn">Log <i class="fa-solid fa-plus"></i></button>
+              </form>
+
+              <!-- Transaction items ledger -->
+              <div class="ledger-wrapper">
+                <ul id="ledger-list" class="ledger-list">
+                  <!-- Populated via client.js -->
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side: Visual Analytics Chart panels -->
+          <div class="analytics-container">
+            <!-- Weekly progress line chart -->
+            <div class="chart-panel glass-panel">
+              <div class="panel-header">
+                <h2>Weekly Consistency</h2>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="weekly-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- Category distribution doughnut chart -->
+            <div class="chart-panel glass-panel">
+              <div class="panel-header">
+                <h2>Activity Focus Breakdown</h2>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="category-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: Activity Manager -->
+      <section id="tab-activities" class="tab-pane">
+        <div class="activity-manager-layout">
+          <!-- Left Panel: Create Forms -->
+          <div class="forms-column">
+            <!-- Add Activity Form -->
+            <div class="glass-panel form-panel">
+              <h2>Add New Activity</h2>
+              <p class="section-subtitle">Define what you want to track or schedule.</p>
+              
+              <form id="activity-form" class="activity-form">
+                <div class="form-group">
+                  <label for="activity-title">Activity Title</label>
+                  <input type="text" id="activity-title" placeholder="e.g. Gym workout, Read Quran, Code project" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="activity-category">Category</label>
+                  <div class="select-wrapper">
+                    <select id="activity-category" required>
+                      <option value="" disabled selected>Loading categories...</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Schedule Type</label>
+                  <div class="frequency-selectors">
+                    <label class="freq-btn">
+                      <input type="radio" name="activity-frequency" value="recurring" checked>
+                      <span class="freq-label">
+                        <i class="fa-solid fa-repeat"></i> Everyday Recurring
+                      </span>
+                    </label>
+                    <label class="freq-btn">
+                      <input type="radio" name="activity-frequency" value="oneoff">
+                      <span class="freq-label">
+                        <i class="fa-solid fa-calendar-day"></i> One-off Date
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Hidden by default, toggled active when oneoff frequency checked -->
+                <div class="form-group hidden" id="specific-date-group">
+                  <label for="activity-specific-date">Target Date</label>
+                  <input type="date" id="activity-specific-date" class="form-input">
+                </div>
+
+                <div class="form-group">
+                  <label for="activity-time">Time Slot (Optional)</label>
+                  <p class="form-help">Set a target start time for a proper daily timeline.</p>
+                  <input type="time" id="activity-time" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                  <label>Importance Weight</label>
+                  <p class="form-help">Higher weight tasks impact your performance score more.</p>
+                  <div class="weight-selectors">
+                    <label class="weight-btn">
+                      <input type="radio" name="activity-weight" value="low" checked>
+                      <span class="weight-label low-weight">
+                        <span class="weight-dot"></span> Low (1x)
+                      </span>
+                    </label>
+                    
+                    <label class="weight-btn">
+                      <input type="radio" name="activity-weight" value="medium">
+                      <span class="weight-label med-weight">
+                        <span class="weight-dot"></span> Medium (2x)
+                      </span>
+                    </label>
+                    
+                    <label class="weight-btn">
+                      <input type="radio" name="activity-weight" value="high">
+                      <span class="weight-label high-weight">
+                        <span class="weight-dot"></span> High (3x)
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                
+                <button type="submit" class="action-btn primary-btn">
+                  Add Activity <i class="fa-solid fa-plus"></i>
+                </button>
+              </form>
+            </div>
+
+            <!-- Add Custom Category Form -->
+            <div class="glass-panel form-panel" style="margin-top: 1.5rem;">
+              <h2>Add Custom Category</h2>
+              <p class="section-subtitle">Create custom domains with logo icons (emojis).</p>
+              
+              <form id="category-form" class="activity-form">
+                <div class="form-group">
+                  <label for="category-name">Category Name</label>
+                  <input type="text" id="category-name" placeholder="e.g. Spiritual, Finance, Social" required>
+                </div>
+                <div class="form-group">
+                  <label for="category-icon">Category Icon (Emoji)</label>
+                  <input type="text" id="category-icon" placeholder="e.g. 🕌, 💰, 👥, 📚" required style="font-size: 1.2rem;">
+                </div>
+                <button type="submit" class="action-btn outline-btn">
+                  Create Category <i class="fa-solid fa-tags"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right Panel: List of Configured Activities -->
+          <div class="glass-panel list-panel">
+            <div class="panel-header">
+              <h2>Your Tracked Activities</h2>
+              <span id="total-activities-count-badge" class="badge">0 Total</span>
+            </div>
+            
+            <ul id="configured-activities-list" class="activities-list">
+              <!-- Populated via client.js -->
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 3: Life Goals & Improvements -->
+      <section id="tab-goals" class="tab-pane">
+        <div class="activity-manager-layout">
+          <!-- Left column: Add New Goal Form -->
+          <div class="forms-column">
+            <div class="glass-panel form-panel">
+              <h2>Set New Life Goal</h2>
+              <p class="section-subtitle">Define target achievements and improvements in your life.</p>
+              
+              <form id="goal-form" class="activity-form">
+                <div class="form-group">
+                  <label for="goal-title">Goal Title / Target Achievement</label>
+                  <input type="text" id="goal-title" placeholder="e.g. Learn Machine Learning, Save $5000" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="goal-category">Improvement Domain</label>
+                  <div class="select-wrapper">
+                    <select id="goal-category" required>
+                      <option value="" disabled selected>Select category...</option>
+                      <!-- Categories populated via client.js -->
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="goal-target-date">Goal Target Date (Deadline)</label>
+                  <input type="date" id="goal-target-date" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="goal-progress-slider">Current Progress</label>
+                  <div class="goal-slider-wrapper">
+                    <input type="range" id="goal-progress-slider" min="0" max="100" value="0" class="mood-range-slider" style="flex-grow: 1;">
+                    <span id="goal-progress-percentage-label" class="badge text-purple" style="min-width: 48px; text-align: center;">0%</span>
+                  </div>
+                </div>
+                
+                <button type="submit" class="action-btn primary-btn">
+                  Create Goal <i class="fa-solid fa-bullseye"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right column: Goals list cards grid -->
+          <div class="glass-panel list-panel">
+            <div class="panel-header">
+              <h2>Active Life Improvements</h2>
+              <span id="total-goals-badge" class="badge">0 Goals</span>
+            </div>
+            
+            <div id="goals-list-grid" class="goals-grid">
+              <!-- Goal cards dynamically rendered via client.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Tomorrow's Planner Modal overlay -->
+    <div id="planner-modal" class="modal-overlay hidden">
+      <div class="modal-box glass-panel">
+        <div class="modal-header">
+          <h2><i class="fa-solid fa-calendar-check icon-purple"></i> Plan Tomorrow's Schedule</h2>
+          <button id="close-planner-modal" class="icon-btn" aria-label="Close modal">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="section-subtitle">Set your focus, toggle activities, and build your timeline schedule for tomorrow (<span id="tomorrow-date-label">YYYY-MM-DD</span>).</p>
+          
+          <!-- Tomorrow's Priorities -->
+          <div class="form-group">
+            <label for="tomorrow-notes"><i class="fa-solid fa-bullseye icon-purple"></i> Tomorrow's Main Focus & Priorities</label>
+            <input type="text" id="tomorrow-notes" placeholder="e.g. Finish writing project proposal, focus on healthy eating" class="form-input">
+          </div>
+
+          <!-- Choose active tasks -->
+          <div class="form-group">
+            <label><i class="fa-solid fa-circle-check icon-purple"></i> Scheduled Activities for Tomorrow</label>
+            <p class="form-help">Toggle off tasks you do not plan to do tomorrow. Checked tasks will appear on tomorrow's checklist.</p>
+            <div id="tomorrow-active-checklist" class="tomorrow-checklist-box">
+              <!-- Populated dynamically via JS: list of activities with switch toggles -->
+            </div>
+          </div>
+
+          <!-- Quick Add Task for Tomorrow -->
+          <div class="quick-add-tomorrow-box">
+            <h3><i class="fa-solid fa-clock icon-purple"></i> Add Task Scheduled for Tomorrow</h3>
+            <div class="quick-add-tomorrow-grid">
+              <input type="text" id="tomorrow-task-title" placeholder="Task Title..." class="form-input">
+              <select id="tomorrow-task-category" class="form-input">
+                <!-- Populated via JS -->
+              </select>
+              <input type="time" id="tomorrow-task-time" class="form-input">
+              <button type="button" id="tomorrow-add-task-btn" class="action-btn outline-btn short-btn">
+                <i class="fa-solid fa-plus"></i> Add to Schedule
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer" style="display: flex; gap: 0.75rem;">
+          <button id="cancel-tomorrow-plan-btn" class="action-btn outline-btn" type="button">
+            Cancel / Close
+          </button>
+          <button id="save-tomorrow-plan-btn" class="action-btn primary-btn">
+            Save & Apply Tomorrow's Schedule <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 دائماً. تعقب وأنجز.</p>
+    </footer>
+  </div>
+
+  <script src="client.js"></script>
+</body>
+</html>

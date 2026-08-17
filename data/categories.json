@@ -1,0 +1,8 @@
+[
+  { "id": "cat-health", "name": "Health", "icon": "❤️" },
+  { "id": "cat-work", "name": "Work", "icon": "💼" },
+  { "id": "cat-learning", "name": "Learning", "icon": "📚" },
+  { "id": "cat-leisure", "name": "Leisure", "icon": "🎨" },
+  { "id": "cat-routine", "name": "Routine", "icon": "🔄" },
+  { "id": "cat-spiritual", "name": "Spiritual", "icon": "🕌" }
+]
