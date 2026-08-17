@@ -196,30 +196,36 @@
                 <span id="finance-summary-badge" class="badge">Net: $0</span>
               </div>
               
-              <!-- Income, Expense, Balance Grid -->
+              <!-- Income, Expense, Debt, Receivable Grid -->
               <div class="finance-badges-grid">
                 <div class="finance-badge-card bg-green">
-                  <span class="f-badge-label">Total Income</span>
+                  <span class="f-badge-label">Income</span>
                   <span id="f-total-income">$0</span>
                 </div>
                 <div class="finance-badge-card bg-red">
-                  <span class="f-badge-label">Total Expenses</span>
+                  <span class="f-badge-label">Expenses</span>
                   <span id="f-total-expenses">$0</span>
                 </div>
+                <div class="finance-badge-card bg-orange">
+                  <span class="f-badge-label">Debt (Owed)</span>
+                  <span id="f-total-debt">$0</span>
+                </div>
                 <div class="finance-badge-card bg-cyan">
-                  <span class="f-badge-label">Net Balance</span>
-                  <span id="f-net-balance">$0</span>
+                  <span class="f-badge-label">Lent (Receivable)</span>
+                  <span id="f-total-receivable">$0</span>
                 </div>
               </div>
 
               <!-- Quick Transaction Logger Form -->
               <form id="finance-form" class="finance-quick-form">
-                <input type="text" id="f-desc" placeholder="Transaction (e.g. Freelance, Dinner)..." required class="form-input">
+                <input type="text" id="f-desc" placeholder="Transaction (e.g. Freelance, Dinner, Loan)..." required class="form-input">
                 <input type="number" id="f-amount" placeholder="Amount ($)..." min="0.01" step="0.01" required class="form-input">
                 <div class="select-wrapper">
                   <select id="f-type" required>
                     <option value="expense">Expense 💸</option>
                     <option value="income">Income 💰</option>
+                    <option value="debt">Debt (Owed) ⏳</option>
+                    <option value="receivable">Receivable (Lent) 📈</option>
                   </select>
                 </div>
                 <button type="submit" class="action-btn primary-btn short-btn">Log <i class="fa-solid fa-plus"></i></button>

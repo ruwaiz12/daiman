@@ -4,7 +4,7 @@ let state = {
   activities: [],
   categories: [],
   goals: [],
-  currentLog: { activeIds: [], completedIds: [], notes: '', mood: 3, finance: { income: 0, expense: 0, transactions: [] } },
+  currentLog: { activeIds: [], completedIds: [], notes: '', mood: 3, finance: { income: 0, expense: 0, debt: 0, receivable: 0, transactions: [] } },
   analytics: null
 };
 
@@ -96,6 +96,8 @@ const saveTomorrowPlanBtn = document.getElementById('save-tomorrow-plan-btn');
 const financeForm = document.getElementById('finance-form');
 const fTotalIncome = document.getElementById('f-total-income');
 const fTotalExpenses = document.getElementById('f-total-expenses');
+const fTotalDebt = document.getElementById('f-total-debt');
+const fTotalReceivable = document.getElementById('f-total-receivable');
 const fNetBalance = document.getElementById('f-net-balance');
 const financeSummaryBadge = document.getElementById('finance-summary-badge');
 const ledgerList = document.getElementById('ledger-list');
@@ -301,7 +303,7 @@ function setupEventListeners() {
           completedIds: tomorrowLogCache.completedIds,
           notes: focusNotes,
           mood: tomorrowLogCache.mood,
-          finance: tomorrowLogCache.finance || { income: 0, expense: 0, transactions: [] }
+          finance: tomorrowLogCache.finance || { income: 0, expense: 0, debt: 0, receivable: 0, transactions: [] }
         })
       });
 
@@ -857,13 +859,17 @@ function renderConfiguredActivitiesList() {
 function renderFinanceLedger() {
   ledgerList.innerHTML = '';
   
-  const finance = state.currentLog.finance || { income: 0, expense: 0, transactions: [] };
+  const finance = state.currentLog.finance || { income: 0, expense: 0, debt: 0, receivable: 0, transactions: [] };
   const incomeVal = finance.income || 0;
   const expenseVal = finance.expense || 0;
+  const debtVal = finance.debt || 0;
+  const receivableVal = finance.receivable || 0;
   const netVal = incomeVal - expenseVal;
 
   fTotalIncome.textContent = `$${incomeVal.toFixed(2)}`;
   fTotalExpenses.textContent = `$${expenseVal.toFixed(2)}`;
+  fTotalDebt.textContent = `$${debtVal.toFixed(2)}`;
+  fTotalReceivable.textContent = `$${receivableVal.toFixed(2)}`;
   fNetBalance.textContent = `$${netVal.toFixed(2)}`;
   
   if (netVal >= 0) {
@@ -878,7 +884,7 @@ function renderFinanceLedger() {
     financeSummaryBadge.style.background = 'rgba(239, 68, 68, 0.15)';
   }
 
-  if (finance.transactions.length === 0) {
+  if (!finance.transactions || finance.transactions.length === 0) {
     ledgerList.innerHTML = '<li class="empty-state" style="padding: 1rem;"><p class="form-help">No transactions logged for today.</p></li>';
     return;
   }
@@ -888,13 +894,34 @@ function renderFinanceLedger() {
     li.className = 'ledger-item';
 
     const isInc = tx.type === 'income';
+    const isDebt = tx.type === 'debt';
+    const isRec = tx.type === 'receivable';
+
+    let typeClass = 'expense';
+    let prefix = '-';
+    let emoji = '💸';
+
+    if (isInc) {
+      typeClass = 'income';
+      prefix = '+';
+      emoji = '💰';
+    } else if (isDebt) {
+      typeClass = 'debt';
+      prefix = '⏳';
+      emoji = '⏳';
+    } else if (isRec) {
+      typeClass = 'receivable';
+      prefix = '📈';
+      emoji = '📈';
+    }
+
     li.innerHTML = `
       <div class="ledger-item-left">
-        <span>${isInc ? '💰' : '💸'}</span>
+        <span>${emoji}</span>
         <span class="ledger-item-desc">${tx.desc}</span>
       </div>
       <div style="display:flex; align-items:center; gap:0.5rem;">
-        <span class="ledger-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '-'}$${parseFloat(tx.amount).toFixed(2)}</span>
+        <span class="ledger-amount ${typeClass}">${prefix}$${parseFloat(tx.amount).toFixed(2)}</span>
         <button class="icon-btn btn-delete" data-id="${tx.id}" style="width:24px; height:24px; padding:0;" title="Delete Ledger Entry">
           <i class="fa-solid fa-trash" style="font-size:0.75rem;"></i>
         </button>
@@ -909,10 +936,10 @@ function renderFinanceLedger() {
   });
 }
 
-// Add financial transaction
+// Add financial transaction (supporting Debt & Receivables)
 function addFinanceTransaction({ desc, amount, type }) {
   if (!state.currentLog.finance) {
-    state.currentLog.finance = { income: 0, expense: 0, transactions: [] };
+    state.currentLog.finance = { income: 0, expense: 0, debt: 0, receivable: 0, transactions: [] };
   }
 
   const newTx = {
@@ -922,18 +949,30 @@ function addFinanceTransaction({ desc, amount, type }) {
     type
   };
 
+  if (!Array.isArray(state.currentLog.finance.transactions)) {
+    state.currentLog.finance.transactions = [];
+  }
+
   state.currentLog.finance.transactions.push(newTx);
   
   // Recalculate balances
   let income = 0;
   let expense = 0;
+  let debt = 0;
+  let receivable = 0;
+  
   state.currentLog.finance.transactions.forEach(tx => {
-    if (tx.type === 'income') income += tx.amount;
-    else expense += tx.amount;
+    const amt = parseFloat(tx.amount) || 0;
+    if (tx.type === 'income') income += amt;
+    else if (tx.type === 'expense') expense += amt;
+    else if (tx.type === 'debt') debt += amt;
+    else if (tx.type === 'receivable') receivable += amt;
   });
 
   state.currentLog.finance.income = income;
   state.currentLog.finance.expense = expense;
+  state.currentLog.finance.debt = debt;
+  state.currentLog.finance.receivable = receivable;
 
   renderFinanceLedger();
   saveDailyLog();
@@ -948,13 +987,21 @@ function deleteFinanceTransaction(txId) {
   // Recalculate balances
   let income = 0;
   let expense = 0;
+  let debt = 0;
+  let receivable = 0;
+  
   state.currentLog.finance.transactions.forEach(tx => {
-    if (tx.type === 'income') income += tx.amount;
-    else expense += tx.amount;
+    const amt = parseFloat(tx.amount) || 0;
+    if (tx.type === 'income') income += amt;
+    else if (tx.type === 'expense') expense += amt;
+    else if (tx.type === 'debt') debt += amt;
+    else if (tx.type === 'receivable') receivable += amt;
   });
 
   state.currentLog.finance.income = income;
   state.currentLog.finance.expense = expense;
+  state.currentLog.finance.debt = debt;
+  state.currentLog.finance.receivable = receivable;
 
   renderFinanceLedger();
   saveDailyLog();
@@ -1127,6 +1174,7 @@ function getCategoryEmoji(catId) {
   return match ? match.icon : '📋';
 }
 
+// Category fallback helper
 function getCategoryName(catId) {
   const match = state.categories.find(c => c.id === catId || c.name.toLowerCase() === catId.toLowerCase());
   return match ? match.name : catId;
