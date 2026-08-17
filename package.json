@@ -11,5 +11,14 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.2.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruwaiz12/-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ruwaiz12/-/issues"
+  },
+  "homepage": "https://github.com/ruwaiz12/-#readme"
 }
