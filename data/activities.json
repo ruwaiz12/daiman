@@ -1,19 +1,13 @@
 [
   {
-    "id": "act-1786953474831-gonza",
-    "title": "Read QuranRead Quran",
-    "category": "cat-spiritual",
-    "weight": "low",
-    "date": null,
-    "createdAt": "2026-08-17T07:57:54.831Z"
-  },
-  {
     "id": "act-1786953638394-0iasj",
     "title": "Read Quran",
     "category": "cat-routine",
     "weight": "high",
     "date": null,
-    "createdAt": "2026-08-17T08:00:38.394Z"
+    "createdAt": "2026-08-17T08:00:38.394Z",
+    "deleted": true,
+    "deletedAt": "2026-08-19T06:52:29.188Z"
   },
   {
     "id": "act-1786953706419-e330t",
@@ -21,7 +15,9 @@
     "category": "cat-spiritual",
     "weight": "high",
     "date": null,
-    "createdAt": "2026-08-17T08:01:46.419Z"
+    "createdAt": "2026-08-17T08:01:46.419Z",
+    "deleted": true,
+    "deletedAt": "2026-08-19T06:54:12.887Z"
   },
   {
     "id": "act-1786953776094-ijnv4",
@@ -29,7 +25,9 @@
     "category": "cat-work",
     "weight": "high",
     "date": "2026-08-18",
-    "createdAt": "2026-08-17T08:02:56.095Z"
+    "createdAt": "2026-08-17T08:02:56.095Z",
+    "deleted": true,
+    "deletedAt": "2026-08-19T06:54:14.507Z"
   },
   {
     "id": "act-1786954400519-t76xu",
@@ -38,7 +36,9 @@
     "weight": "medium",
     "date": "2026-08-18",
     "time": "07:30",
-    "createdAt": "2026-08-17T08:13:20.519Z"
+    "createdAt": "2026-08-17T08:13:20.519Z",
+    "deleted": true,
+    "deletedAt": "2026-08-19T06:54:15.156Z"
   },
   {
     "id": "act-1786954581753-u74z1",
@@ -47,6 +47,17 @@
     "weight": "low",
     "date": null,
     "time": null,
-    "createdAt": "2026-08-17T08:16:21.753Z"
+    "createdAt": "2026-08-17T08:16:21.753Z",
+    "deleted": true,
+    "deletedAt": "2026-08-19T06:54:15.877Z"
+  },
+  {
+    "id": "act-1787122581211-ztb1l",
+    "title": "Wake up at 04:00 AM",
+    "category": "cat-routine",
+    "weight": "low",
+    "date": null,
+    "time": "04:00",
+    "createdAt": "2026-08-19T06:56:21.211Z"
   }
 ]

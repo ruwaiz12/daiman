@@ -1,13 +1,5 @@
 [
   {
-    "id": "goal-starter-1",
-    "title": "Master Full-Stack Engineering Studies",
-    "category": "cat-learning",
-    "targetDate": "2026-10-31",
-    "progress": 38,
-    "createdAt": "2026-08-17T09:00:00.000Z"
-  },
-  {
     "id": "goal-starter-2",
     "title": "Build a Personal Emergency Fund of $2000",
     "category": "cat-routine",
