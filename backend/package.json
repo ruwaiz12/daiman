@@ -1,0 +1,35 @@
+{
+  "name": "daily",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "node server.js",
+    "dev:client": "npm run dev --prefix ../frontend",
+    "build": "npm run build:client",
+    "build:client": "npm run build --prefix ../frontend",
+    "install:client": "npm install --prefix ../frontend",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruwaiz12/-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ruwaiz12/-/issues"
+  },
+  "homepage": "https://github.com/ruwaiz12/-#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
