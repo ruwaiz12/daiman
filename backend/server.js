@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/db');
 const migrateJSONToMongoDB = require('./config/migration');
@@ -21,7 +23,14 @@ connectDB().then(async () => {
 
 // Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..', 'frontend', 'dist')));
+app.use(cors());
+
+const distPath = path.join(__dirname, '..', 'frontend', 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+} else {
+  console.log(`[Warning] Static client build files not found at: ${distPath}. Server running in API-only mode.`);
+}
 
 // API Routes
 app.use('/api/categories', categoryRoutes);
@@ -32,7 +41,12 @@ app.use('/api/analytics', analyticsRoutes);
 
 // Fallback to static client build for any other path (Vite SPA compatibility)
 app.get('*all', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'dist', 'index.html'));
+  const indexPath = path.join(distPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.json({ message: 'API Server is running. Frontend static build files not found.' });
+  }
 });
 
 // Start Server
